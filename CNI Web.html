@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniMarket — Student Sustainable Market</title>
+<style>
+  :root {
+    --primary: #1D9E75;
+    --primary-dark: #0F6E56;
+    --primary-light: #E1F5EE;
+    --accent: #D85A30;
+    --accent-light: #FAECE7;
+    --bg: #f8faf9;
+    --surface: #ffffff;
+    --border: #e2e8e4;
+    --text: #1a2a22;
+    --text-muted: #5a7065;
+    --text-hint: #8faa9e;
+    --success: #1D9E75;
+    --danger: #E24B4A;
+    --warning: #EF9F27;
+    --info: #378ADD;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 2px 8px rgba(29,158,117,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  
+  /* NAV */
+  nav { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1rem; height: 60px; }
+  .logo { font-size: 1.3rem; font-weight: 700; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .logo span { font-size: 1.5rem; }
+  .nav-search { flex: 1; max-width: 400px; position: relative; }
+  .nav-search input { width: 100%; padding: 8px 16px 8px 40px; border: 1px solid var(--border); border-radius: 20px; font-size: 14px; background: var(--bg); outline: none; color: var(--text); }
+  .nav-search input:focus { border-color: var(--primary); }
+  .nav-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-hint); font-size: 16px; }
+  .nav-links { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+  .nav-btn { padding: 7px 14px; border-radius: var(--radius-sm); font-size: 14px; cursor: pointer; border: none; background: none; color: var(--text-muted); display: flex; align-items: center; gap: 6px; position: relative; transition: all 0.15s; }
+  .nav-btn:hover { background: var(--primary-light); color: var(--primary); }
+  .nav-btn.active { color: var(--primary); }
+  .badge { position: absolute; top: 2px; right: 2px; background: var(--accent); color: white; font-size: 10px; font-weight: 700; border-radius: 50%; width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; }
+  .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-primary { background: var(--primary); color: white; border: none; padding: 9px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-outline { background: none; border: 1.5px solid var(--primary); color: var(--primary); padding: 8px 18px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .btn-outline:hover { background: var(--primary-light); }
+  .btn-danger { background: var(--danger); color: white; border: none; padding: 8px 16px; border-radius: var(--radius-sm); font-size: 13px; cursor: pointer; }
+  .btn-sm { padding: 6px 12px; font-size: 13px; }
+
+  /* PAGES */
+  .page { display: none; max-width: 1200px; margin: 0 auto; padding: 2rem 1.5rem; }
+  .page.active { display: block; }
+
+  /* HOME */
+  .hero { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); border-radius: var(--radius); padding: 3rem 2.5rem; color: white; margin-bottom: 2rem; position: relative; overflow: hidden; }
+  .hero::before { content: '♻'; position: absolute; right: 2rem; top: 50%; transform: translateY(-50%); font-size: 8rem; opacity: 0.1; }
+  .hero h1 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.75rem; }
+  .hero p { font-size: 1.05rem; opacity: 0.9; max-width: 500px; margin-bottom: 1.5rem; line-height: 1.6; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-btn { padding: 10px 22px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; cursor: pointer; border: none; }
+  .hero-btn-white { background: white; color: var(--primary); }
+  .hero-btn-outline { background: rgba(255,255,255,0.15); color: white; border: 1.5px solid rgba(255,255,255,0.5); }
+  .section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; }
+  .section-title a { font-size: 14px; font-weight: 500; color: var(--primary); cursor: pointer; }
+  .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+  .cat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem 1rem; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .cat-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .cat-icon { font-size: 2rem; margin-bottom: 8px; }
+  .cat-name { font-size: 13px; font-weight: 600; color: var(--text); }
+  .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .product-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: all 0.15s; }
+  .product-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+  .product-img { width: 100%; height: 160px; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; overflow: hidden; }
+  .product-condition { position: absolute; top: 8px; left: 8px; background: var(--primary); color: white; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; z-index: 10; }
+  .wishlist-btn { position: absolute; top: 8px; right: 8px; background: white; border: none; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; z-index: 10; }
+  .product-info { padding: 12px; }
+  .product-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .product-price { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+  .product-meta { font-size: 12px; color: var(--text-hint); display: flex; justify-content: space-between; }
+  .tag { display: inline-block; background: var(--primary-light); color: var(--primary-dark); font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+
+  /* CARDS & FORMS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+  .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; color: var(--text); background: var(--bg); outline: none; transition: border-color 0.15s; }
+  .form-group input[type="file"] { padding: 6px; background: white; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); background: white; }
+  .form-group textarea { min-height: 100px; resize: vertical; font-family: inherit; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-hint { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
+  .page-header { margin-bottom: 1.5rem; }
+  .page-header h2 { font-size: 1.5rem; font-weight: 700; }
+  .page-header p { color: var(--text-muted); font-size: 14px; margin-top: 4px; }
+
+  /* AUTH */
+  .auth-wrap { max-width: 440px; margin: 0 auto; }
+  .auth-logo { text-align: center; margin-bottom: 1.5rem; }
+  .auth-logo .logo-big { font-size: 2.5rem; }
+  .auth-logo h2 { font-size: 1.5rem; font-weight: 700; margin-top: 8px; }
+  .auth-logo p { color: var(--text-muted); font-size: 14px; }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 1rem 0; }
+  .divider span { font-size: 12px; color: var(--text-hint); white-space: nowrap; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .auth-link { text-align: center; font-size: 14px; color: var(--text-muted); margin-top: 1rem; }
+  .auth-link a { color: var(--primary); cursor: pointer; font-weight: 600; }
+
+  /* PROFILE */
+  .profile-header { display: flex; align-items: flex-start; gap: 1.5rem; margin-bottom: 1.5rem; }
+  .profile-avatar { width: 80px; height: 80px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: 700; flex-shrink: 0; }
+  .profile-info h2 { font-size: 1.3rem; font-weight: 700; }
+  .profile-info p { color: var(--text-muted); font-size: 14px; }
+  .profile-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--primary-light); border-radius: var(--radius-sm); padding: 1rem; text-align: center; }
+  .stat-num { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .tab { padding: 10px 20px; font-size: 14px; font-weight: 600; cursor: pointer; color: var(--text-muted); border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+  /* PRODUCT DETAILS */
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .detail-img { background: var(--primary-light); border-radius: var(--radius); height: 320px; display: flex; align-items: center; justify-content: center; font-size: 8rem; overflow: hidden; }
+  .detail-price { font-size: 2rem; font-weight: 700; color: var(--primary); margin: 0.75rem 0; }
+  .detail-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 1rem 0; }
+  .seller-card { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; display: flex; align-items: center; gap: 12px; margin-top: 1rem; }
+  .seller-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; }
+  .detail-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .meta-chip { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 5px 12px; font-size: 13px; }
+  .meta-chip strong { color: var(--primary); }
+
+  /* CART */
+  .cart-layout { display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; }
+  .cart-item { display: flex; gap: 12px; padding: 1rem; border-bottom: 1px solid var(--border); }
+  .cart-item-img { width: 70px; height: 70px; border-radius: var(--radius-sm); background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 2rem; flex-shrink: 0; overflow: hidden; }
+  .cart-item-info { flex: 1; }
+  .cart-item-title { font-weight: 600; font-size: 14px; }
+  .cart-item-price { color: var(--primary); font-weight: 700; font-size: 15px; margin-top: 4px; }
+  .cart-item-seller { font-size: 12px; color: var(--text-hint); }
+  .cart-remove { background: none; border: none; color: var(--danger); cursor: pointer; font-size: 18px; padding: 4px; }
+  .order-summary { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; position: sticky; top: 80px; }
+  .summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; }
+  .summary-row.total { border-top: 1px solid var(--border); margin-top: 8px; padding-top: 12px; font-weight: 700; font-size: 16px; }
+
+  /* CHECKOUT */
+  .checkout-layout { display: grid; grid-template-columns: 1fr 380px; gap: 1.5rem; }
+  .checkout-step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; margin-bottom: 1rem; }
+  .checkout-step h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .step-num { width: 26px; height: 26px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+
+  /* PAYMENT */
+  .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.25rem; }
+  .payment-method { border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; cursor: pointer; display: flex; align-items: center; gap: 10px; transition: all 0.15s; }
+  .payment-method.selected { border-color: var(--primary); background: var(--primary-light); }
+  .payment-method-icon { font-size: 1.5rem; }
+  .payment-method-label { font-size: 14px; font-weight: 600; }
+
+  /* WISHLIST */
+  .wishlist-empty { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+  .wishlist-empty .icon { font-size: 4rem; margin-bottom: 1rem; }
+
+  /* TOAST */
+  #toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 999; display: flex; flex-direction: column; gap: 8px; }
+  .toast { background: var(--text); color: white; padding: 12px 20px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; animation: slideIn 0.3s ease; display: flex; align-items: center; gap: 8px; min-width: 200px; }
+  .toast.success { background: var(--success); }
+  .toast.error { background: var(--danger); }
+  @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* CUSTOMER SERVICE */
+  .chat-window { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; max-height: 480px; display: flex; flex-direction: column; }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 12px; background: var(--bg); min-height: 360px; }
+  .chat-bubble { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 14px; line-height: 1.5; }
+  .chat-bubble.bot { background: var(--surface); border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .chat-bubble.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .chat-input-area { border-top: 1px solid var(--border); padding: 12px; display: flex; gap: 10px; background: var(--surface); }
+  .chat-input-area input { flex: 1; border: 1px solid var(--border); border-radius: 20px; padding: 9px 16px; font-size: 14px; outline: none; }
+  .cs-topics { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .cs-topic { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 500; transition: all 0.15s; }
+  .cs-topic:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+
+  /* CONTACT */
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .contact-info-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 1.5rem; }
+  .contact-icon { width: 40px; height: 40px; background: var(--primary-light); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+
+  /* FOOTER */
+  footer { background: var(--text); color: rgba(255,255,255,0.85); padding: 3rem 1.5rem 1.5rem; margin-top: 4rem; }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+  .footer-brand { font-size: 1.2rem; font-weight: 700; color: white; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .footer-desc { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.6); }
+  .footer-heading { font-weight: 700; font-size: 14px; color: white; margin-bottom: 12px; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .footer-links li { font-size: 13px; color: rgba(255,255,255,0.6); cursor: pointer; transition: color 0.15s; }
+  .footer-links li:hover { color: var(--primary-light); }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; }
+  .footer-copyright { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer-sdg { background: rgba(29,158,117,0.2); border: 1px solid rgba(29,158,117,0.3); border-radius: var(--radius-sm); padding: 6px 14px; font-size: 13px; color: var(--primary-light); }
+
+  /* UTILS */
+  .alert { padding: 12px 16px; border-radius: var(--radius-sm); font-size: 14px; margin-bottom: 1rem; }
+  .alert-success { background: var(--primary-light); color: var(--primary-dark); border: 1px solid rgba(29,158,117,0.2); }
+  .alert-error { background: #FCEBEB; color: #A32D2D; border: 1px solid rgba(226,75,74,0.2); }
+  .alert-info { background: #E6F1FB; color: #185FA5; border: 1px solid rgba(55,138,221,0.2); }
+  .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-muted); }
+  .empty-state .icon { font-size: 3.5rem; margin-bottom: 1rem; }
+  .rating { color: #EF9F27; }
+  .star-filled { color: #EF9F27; }
+  .star-empty { color: var(--border); }
+  select option { color: var(--text); }
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+  .filter-bar select, .filter-bar input { padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; background: var(--surface); outline: none; color: var(--text); }
+  .payment-success { text-align: center; padding: 3rem; }
+  .payment-success .icon { font-size: 5rem; margin-bottom: 1rem; }
+  .payment-success h2 { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+  .payment-success p { color: var(--text-muted); margin-top: 8px; }
+  @media (max-width: 768px) {
+    .detail-grid, .cart-layout, .checkout-layout, .contact-grid, .form-row, .footer-grid { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo" onclick="navigate('home')">
+      <span>♻</span> UniMarket
+    </div>
+    <div class="nav-search">
+      <span class="nav-search-icon">🔍</span>
+      <input type="text" placeholder="Search products..." id="globalSearch" oninput="globalSearchProducts()" onfocus="if(currentPage!='home')navigate('home')">
+    </div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="navigate('wishlist')" id="navWishlist">
+        ♡ <span>Wishlist</span>
+        <span class="badge" id="wishlistBadge" style="display:none">0</span>
+      </button>
+      <button class="nav-btn" onclick="navigate('cart')" id="navCart">
+        🛒 <span>Cart</span>
+        <span class="badge" id="cartBadge" style="display:none">0</span>
+      </button>
+      <div id="navAuthButtons" style="display:flex;gap:6px;">
+        <button class="btn-outline btn-sm" onclick="navigate('login')">Login</button>
+        <button class="btn-primary btn-sm" onclick="navigate('signup')">Sign Up</button>
+      </div>
+      <div id="navUserArea" style="display:none;align-items:center;gap:8px;">
+        <div class="nav-avatar" onclick="navigate('profile')" id="navAvatar">U</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="page-home" class="page active">
+  <div class="hero">
+    <h1>Buy & Sell. Sustainably. 🌱</h1>
+    <p>UniMarket is the student marketplace for second-hand goods — books, electronics, dorm supplies, and more. Trade smart, reduce waste.</p>
+    <div class="hero-actions">
+      <button class="hero-btn hero-btn-white" onclick="navigate('add-product')">+ List an Item</button>
+      <button class="hero-btn hero-btn-outline" onclick="scrollTo(0,300)">Browse Items</button>
+    </div>
+  </div>
+  <div class="section-title">Browse by Category</div>
+  <div class="cats-grid">
+    <div class="cat-card" onclick="filterByCategory('Books')"><div class="cat-icon">📚</div><div class="cat-name">Books</div></div>
+    <div class="cat-card" onclick="filterByCategory('Electronics')"><div class="cat-icon">💻</div><div class="cat-name">Electronics</div></div>
+    <div class="cat-card" onclick="filterByCategory('Furniture')"><div class="cat-icon">🪑</div><div class="cat-name">Furniture</div></div>
+    <div class="cat-card" onclick="filterByCategory('Clothing')"><div class="cat-icon">👕</div><div class="cat-name">Clothing</div></div>
+    <div class="cat-card" onclick="filterByCategory('Stationery')"><div class="cat-icon">✏️</div><div class="cat-name">Stationery</div></div>
+    <div class="cat-card" onclick="filterByCategory('Sports')"><div class="cat-icon">⚽</div><div class="cat-name">Sports</div></div>
+    <div class="cat-card" onclick="filterByCategory('Kitchen')"><div class="cat-icon">🍳</div><div class="cat-name">Kitchen</div></div>
+    <div class="cat-card" onclick="filterByCategory('Other')"><div class="cat-icon">📦</div><div class="cat-name">Other</div></div>
+  </div>
+  <div class="filter-bar">
+    <input type="text" placeholder="Filter..." id="filterText" oninput="renderProducts()">
+    <select id="filterCat" onchange="renderProducts()">
+      <option value="">All Categories</option>
+      <option>Books</option><option>Electronics</option><option>Furniture</option>
+      <option>Clothing</option><option>Stationery</option><option>Sports</option><option>Kitchen</option><option>Other</option>
+    </select>
+    <select id="filterSort" onchange="renderProducts()">
+      <option value="newest">Newest First</option>
+      <option value="price_asc">Price: Low to High</option>
+      <option value="price_desc">Price: High to Low</option>
+    </select>
+    <select id="filterCond" onchange="renderProducts()">
+      <option value="">All Conditions</option>
+      <option>Like New</option><option>Good</option><option>Fair</option>
+    </select>
+  </div>
+  <div class="section-title">Available Items <span id="productCount" style="font-size:14px;color:var(--text-hint);font-weight:400;"></span></div>
+  <div class="products-grid" id="productsGrid"></div>
+  <div id="productsEmpty" class="empty-state" style="display:none">
+    <div class="icon">🔍</div>
+    <p>No items found matching your search.</p>
+  </div>
+</div>
+
+<div id="page-login" class="page">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <div class="logo-big">♻</div>
+      <h2>Welcome back</h2>
+      <p>Sign in to your UniMarket account</p>
+    </div>
+    <div class="card">
+      <div id="loginError" class="alert alert-error" style="display:none"></div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="student@university.edu.my">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password">
+      </div>
+      <button class="btn-primary" style="width:100%;padding:11px" onclick="doLogin()">Sign In</button>
+      <div class="auth-link">Don't have an account? <a onclick="navigate('signup')">Sign up</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="page-signup" class="page">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <div class="logo-big">♻</div>
+      <h2>Create account</h2>
+      <p>Join the UniMarket student community</p>
+    </div>
+    <div class="card">
+      <div id="signupError" class="alert alert-error" style="display:none"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" id="signupFirst" placeholder="Ahmad">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" id="signupLast" placeholder="Razif">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Student Email</label>
+        <input type="email" id="signupEmail" placeholder="student@university.edu.my">
+      </div>
+      <div class="form-group">
+        <label>Student ID</label>
+        <input type="text" id="signupStudentId" placeholder="e.g. TP054321">
+      </div>
+      <div class="form-group">
+        <label>Faculty / Course</label>
+        <input type="text" id="signupFaculty" placeholder="e.g. Faculty of Engineering">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="signupPassword" placeholder="At least 6 characters">
+        <div class="form-hint">Minimum 6 characters</div>
+      </div>
+      <button class="btn-primary" style="width:100%;padding:11px" onclick="doSignup()">Create Account</button>
+      <div class="auth-link">Already have an account? <a onclick="navigate('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<div id="page-profile" class="page">
+  <div class="profile-header" id="profileHeader"></div>
+  <div class="profile-stats" id="profileStats"></div>
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab(this,'myListings')">My Listings</div>
+    <div class="tab" onclick="switchTab(this,'editProfile')">Edit Profile</div>
+    <div class="tab" onclick="switchTab(this,'orderHistory')">Order History</div>
+  </div>
+  <div id="myListings"></div>
+  <div id="editProfile" style="display:none">
+    <div class="card" style="max-width:600px">
+      <div class="form-row">
+        <div class="form-group"><label>First Name</label><input type="text" id="editFirst"></div>
+        <div class="form-group"><label>Last Name</label><input type="text" id="editLast"></div>
+      </div>
+      <div class="form-group"><label>Faculty</label><input type="text" id="editFaculty"></div>
+      <div class="form-group"><label>Phone</label><input type="text" id="editPhone" placeholder="e.g. 012-3456789"></div>
+      <div class="form-group"><label>Bio</label><textarea id="editBio" placeholder="Tell buyers about yourself..."></textarea></div>
+      <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+  <div id="orderHistory" style="display:none">
+    <div id="orderList"></div>
+  </div>
+</div>
+
+<div id="page-product-details" class="page">
+  <div id="productDetailContent"></div>
+</div>
+
+<div id="page-add-product" class="page">
+  <div class="page-header">
+    <h2>List an Item for Sale</h2>
+    <p>Share your pre-loved items with the UniMarket community</p>
+  </div>
+  <div class="card" style="max-width:680px">
+    <div class="form-group">
+      <label>Product Title *</label>
+      <input type="text" id="addTitle" placeholder="e.g. Engineering Mathematics Textbook 4th Ed">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Category *</label>
+        <select id="addCategory">
+          <option value="">Select category</option>
+          <option>Books</option><option>Electronics</option><option>Furniture</option>
+          <option>Clothing</option><option>Stationery</option><option>Sports</option><option>Kitchen</option><option>Other</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Condition *</label>
+        <select id="addCondition">
+          <option value="">Select condition</option>
+          <option>Like New</option><option>Good</option><option>Fair</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Price (RM) *</label>
+        <input type="number" id="addPrice" placeholder="0.00" min="0" step="0.50">
+      </div>
+      <div class="form-group">
+        <label>Original Price (RM)</label>
+        <input type="number" id="addOriginalPrice" placeholder="0.00" min="0" step="0.50">
+        <div class="form-hint">Help buyers see the savings</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Description *</label>
+      <textarea id="addDescription" placeholder="Describe the item — include details like edition, age, any wear or damage, why you're selling..."></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>Product Image (Opsional)</label>
+      <input type="file" id="addImage" accept="image/*" onchange="previewImage(event)">
+      <div id="imagePreviewContainer" style="display:none; margin-top:10px;">
+        <img id="imagePreview" style="width: 120px; height: 120px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--border);">
+      </div>
+      <div class="form-hint">Muat naik gambar sebenar item anda (Maksimum 2MB).</div>
+    </div>
+    
+    <div class="form-group">
+      <label>Meet-up Location</label>
+      <input type="text" id="addLocation" placeholder="e.g. Library Block A, Cafeteria">
+    </div>
+    <button class="btn-primary" style="width:100%;padding:12px;font-size:15px" onclick="submitProduct()">List Item for Sale 🌱</button>
+  </div>
+</div>
+
+<div id="page-cart" class="page">
+  <div class="page-header"><h2>🛒 My Cart</h2></div>
+  <div class="cart-layout" id="cartLayout">
+    <div>
+      <div class="card" id="cartItemsContainer">
+        <div id="cartItems"></div>
+      </div>
+    </div>
+    <div>
+      <div class="order-summary" id="cartSummary">
+        <h3 style="font-weight:700;margin-bottom:1rem">Order Summary</h3>
+        <div id="cartSummaryRows"></div>
+        <button class="btn-primary" style="width:100%;padding:12px;margin-top:1rem" onclick="navigate('checkout')">Proceed to Checkout →</button>
+        <button class="btn-outline" style="width:100%;padding:10px;margin-top:8px" onclick="navigate('home')">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+  <div id="cartEmpty" class="empty-state" style="display:none">
+    <div class="icon">🛒</div>
+    <p style="margin-bottom:1rem">Your cart is empty.</p>
+    <button class="btn-primary" onclick="navigate('home')">Start Shopping</button>
+  </div>
+</div>
+
+<div id="page-checkout" class="page">
+  <div class="page-header"><h2>Checkout</h2></div>
+  <div class="checkout-layout">
+    <div>
+      <div class="checkout-step">
+        <h3><span class="step-num">1</span> Delivery Information</h3>
+        <div class="form-row">
+          <div class="form-group"><label>Full Name</label><input type="text" id="ckName" placeholder="Full name"></div>
+          <div class="form-group"><label>Phone</label><input type="text" id="ckPhone" placeholder="012-3456789"></div>
+        </div>
+        
+        <div class="form-group">
+          <label>Lokasi Meet-up (Peta UTHM)</label>
+          <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
+           <button type="button" class="btn-outline btn-sm" onclick="setMapLocation('Library PTTA', '1.856855', '103.082490')">📍 Library PTTA</button>
+<button type="button" class="btn-outline btn-sm" onclick="setMapLocation('Blok G3', '1.859424', '103.086884')">📍 Blok G3</button>
+<button type="button" class="btn-outline btn-sm" onclick="setMapLocation('Kawasan ATM', '1.854665', '103.085955')">📍 ATM UTHM</button>
+          </div>
+          <iframe id="uthmMapFrame" width="100%" height="220" style="border:1px solid var(--border); border-radius: var(--radius-sm); margin-bottom:8px;" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=UTHM+Johor&t=&z=15&ie=UTF8&iwloc=&output=embed"></iframe>
+          <input type="text" id="ckAddress" placeholder="Sahkan alamat, atau taip detail spesifik (Cth: Blok G3, Meja depan)">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group"><label>Preferred Date</label><input type="date" id="ckDate"></div>
+          <div class="form-group"><label>Preferred Time</label>
+            <select id="ckTime">
+              <option>Morning (8am – 12pm)</option>
+              <option>Afternoon (12pm – 5pm)</option>
+              <option>Evening (5pm – 8pm)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group"><label>Notes for Seller</label><textarea id="ckNotes" placeholder="Any special instructions?" style="min-height:70px"></textarea></div>
+      </div>
+      <div class="checkout-step">
+        <h3><span class="step-num">2</span> Payment Method</h3>
+        <div class="payment-methods">
+          <div class="payment-method selected" onclick="selectPayment(this,'online')"><div class="payment-method-icon">💳</div><div class="payment-method-label">Online Banking</div></div>
+          <div class="payment-method" onclick="selectPayment(this,'ewallet')"><div class="payment-method-icon">📱</div><div class="payment-method-label">e-Wallet</div></div>
+          <div class="payment-method" onclick="selectPayment(this,'cash')"><div class="payment-method-icon">💵</div><div class="payment-method-label">Cash (Meet-up)</div></div>
+          <div class="payment-method" onclick="selectPayment(this,'transfer')"><div class="payment-method-icon">🏦</div><div class="payment-method-label">Bank Transfer</div></div>
+        </div>
+        <input type="hidden" id="selectedPaymentMethod" value="online">
+      </div>
+      <button class="btn-primary" style="width:100%;padding:13px;font-size:15px" onclick="placeOrder()">Place Order →</button>
+    </div>
+    <div>
+      <div class="order-summary">
+        <h3 style="font-weight:700;margin-bottom:1rem">Items in Order</h3>
+        <div id="checkoutItems"></div>
+        <div id="checkoutSummaryRows"></div>
+        <button class="btn-outline btn-sm" style="width:100%;margin-top:12px" onclick="navigate('cart')">← Edit Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-wishlist" class="page">
+  <div class="page-header"><h2>♡ Wishlist</h2></div>
+  <div class="products-grid" id="wishlistGrid"></div>
+  <div id="wishlistEmpty" class="empty-state" style="display:none">
+    <div class="icon">♡</div>
+    <p style="margin-bottom:1rem">Your wishlist is empty. Save items you love!</p>
+    <button class="btn-primary" onclick="navigate('home')">Browse Items</button>
+  </div>
+</div>
+
+<div id="page-payment" class="page">
+  <div style="max-width:500px;margin:0 auto">
+    <div id="paymentGatewayContent"></div>
+  </div>
+</div>
+
+<div id="page-contact" class="page">
+  <div class="page-header"><h2>Contact Us</h2><p>We're here to help the UniMarket community</p></div>
+  <div class="contact-grid">
+    <div>
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:1.25rem">Send a Message</h3>
+        <div id="contactSuccess" class="alert alert-success" style="display:none">✅ Message sent! We'll reply within 24 hours.</div>
+        <div class="form-group"><label>Your Name</label><input type="text" id="ctName" placeholder="Full name"></div>
+        <div class="form-group"><label>Email</label><input type="email" id="ctEmail" placeholder="your@email.com"></div>
+        <div class="form-group"><label>Subject</label>
+          <select id="ctSubject">
+            <option>General Inquiry</option>
+            <option>Report a Problem</option>
+            <option>Account Issue</option>
+            <option>Payment Issue</option>
+            <option>Safety Concern</option>
+            <option>Feedback / Suggestion</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Message</label><textarea id="ctMessage" placeholder="Describe your issue or question in detail..."></textarea></div>
+        <button class="btn-primary" onclick="submitContact()">Send Message</button>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:1rem">
+        <h3 style="font-weight:700;margin-bottom:1.25rem">Get in Touch</h3>
+        <div class="contact-info-item"><div class="contact-icon">📧</div><div><strong>Email</strong><br><span style="color:var(--text-muted);font-size:14px">support@unimarket.edu.my</span></div></div>
+        <div class="contact-info-item"><div class="contact-icon">📍</div><div><strong>Location</strong><br><span style="color:var(--text-muted);font-size:14px">Student Services Centre, Level 2, Main Building</span></div></div>
+        <div class="contact-info-item"><div class="contact-icon">🕐</div><div><strong>Operating Hours</strong><br><span style="color:var(--text-muted);font-size:14px">Monday–Friday: 8am – 6pm<br>Saturday: 9am – 1pm</span></div></div>
+        <div class="contact-info-item"><div class="contact-icon">📞</div><div><strong>Phone</strong><br><span style="color:var(--text-muted);font-size:14px">+60 7-XXX XXXX</span></div></div>
+      </div>
+      <div class="card">
+        <h3 style="font-weight:700;margin-bottom:12px">Quick Links</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn-outline btn-sm" style="text-align:left" onclick="navigate('customer-service')">💬 Live Chat Support</button>
+          <button class="btn-outline btn-sm" style="text-align:left" onclick="navigate('home')">🌱 Browse the Market</button>
+          <button class="btn-outline btn-sm" style="text-align:left" onclick="navigate('add-product')">+ List an Item</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-customer-service" class="page">
+  <div class="page-header"><h2>💬 Customer Support</h2><p>Get help with your UniMarket experience</p></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+    <div>
+      <p style="font-weight:600;margin-bottom:12px;font-size:14px">Common Topics</p>
+      <div class="cs-topics">
+        <div class="cs-topic" onclick="askSupport('How do I list an item for sale?')">📦 Listing items</div>
+        <div class="cs-topic" onclick="askSupport('How does payment work on UniMarket?')">💳 Payment help</div>
+        <div class="cs-topic" onclick="askSupport('How do I report a suspicious seller?')">🚩 Report user</div>
+        <div class="cs-topic" onclick="askSupport('How do I track my order?')">📍 Track order</div>
+        <div class="cs-topic" onclick="askSupport('How do I delete my listing?')">🗑 Manage listings</div>
+        <div class="cs-topic" onclick="askSupport('What is your refund policy?')">↩ Refund policy</div>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <h4 style="font-weight:700;margin-bottom:12px">📋 FAQ</h4>
+        <details style="margin-bottom:10px"><summary style="cursor:pointer;font-size:14px;font-weight:600">Is UniMarket free to use?</summary><p style="font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6">Yes! UniMarket is completely free for all enrolled students. We charge no listing fees or commissions.</p></details>
+        <details style="margin-bottom:10px"><summary style="cursor:pointer;font-size:14px;font-weight:600">Who can sell on UniMarket?</summary><p style="font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6">Only verified university students with a valid student email and ID can buy or sell on UniMarket.</p></details>
+        <details style="margin-bottom:10px"><summary style="cursor:pointer;font-size:14px;font-weight:600">How are transactions protected?</summary><p style="font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6">We recommend meeting in safe public areas on campus. For online payments, we use a secure payment gateway. Always verify before transferring money.</p></details>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:600;margin-bottom:12px;font-size:14px">Live Chat with Support</p>
+      <div class="chat-window">
+        <div class="chat-messages" id="chatMessages">
+          <div class="chat-bubble bot">👋 Hello! I'm the UniMarket support assistant. How can I help you today?</div>
+        </div>
+        <div class="chat-input-area">
+          <input type="text" id="chatInput" placeholder="Type your question..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn-primary btn-sm" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand"><span>♻</span> UniMarket</div>
+        <p class="footer-desc">A student-driven digital marketplace that promotes sustainable consumption, reduces waste, and builds a safer, more organized trading community within universities. Supporting SDG 9: Industry, Innovation and Infrastructure.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Navigation</div>
+        <ul class="footer-links">
+          <li onclick="navigate('home')">Home</li>
+          <li onclick="navigate('add-product')">Sell an Item</li>
+          <li onclick="navigate('wishlist')">Wishlist</li>
+          <li onclick="navigate('cart')">My Cart</li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-heading">Support</div>
+        <ul class="footer-links">
+          <li onclick="navigate('contact')">Contact Us</li>
+          <li onclick="navigate('customer-service')">Customer Service</li>
+          <li>Privacy Policy</li>
+          <li>Terms of Use</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>
+        <p class="footer-copyright">© 2025 UniMarket — Student Sustainable Market. All rights reserved.</p>
+        <p class="footer-copyright" style="margin-top:4px">About Us: UniMarket was created by university students, for university students. Our mission is to make campus life greener, smarter, and more connected through sustainable second-hand trading.</p>
+      </div>
+      <div class="footer-sdg">🌐 Supporting SDG 9</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ========== DATABASE (localStorage) ==========
+const DB = {
+  get: (key) => { try { return JSON.parse(localStorage.getItem('unimarket_'+key)) || null; } catch { return null; } },
+  set: (key, val) => localStorage.setItem('unimarket_'+key, JSON.stringify(val)),
+  users: () => DB.get('users') || [],
+  saveUsers: (u) => DB.set('users', u),
+  products: () => DB.get('products') || [],
+  saveProducts: (p) => DB.set('products', p),
+  cart: () => DB.get('cart') || [],
+  saveCart: (c) => DB.set('cart', c),
+  wishlist: () => DB.get('wishlist') || [],
+  saveWishlist: (w) => DB.set('wishlist', w),
+  currentUser: () => DB.get('currentUser'),
+  setCurrentUser: (u) => DB.set('currentUser', u),
+  logout: () => localStorage.removeItem('unimarket_currentUser'),
+  orders: () => DB.get('orders') || [],
+  saveOrders: (o) => DB.set('orders', o),
+};
+
+// ========== SEED DATA ==========
+function seedData() {
+  if (DB.products().length > 0) return;
+  DB.saveProducts(sampleProducts);
+  const demoUsers = [
+    { id: 'demo1', firstName: 'Ahmad', lastName: 'Razif', email: 'ahmad@university.edu.my', password: 'demo123', studentId: 'TP051234', faculty: 'Faculty of Engineering', phone: '012-3456789', bio: 'Selling stuff before graduating!', joinDate: Date.now()-2592000000 },
+    { id: 'demo2', firstName: 'Siti', lastName: 'Nadirah', email: 'siti@university.edu.my', password: 'demo123', studentId: 'TP052345', faculty: 'Faculty of Business', phone: '011-9876543', bio: 'Buying and selling on UniMarket!', joinDate: Date.now()-1296000000 },
+    { id: 'demo3', firstName: 'Rajesh', lastName: 'Kumar', email: 'rajesh@university.edu.my', password: 'demo123', studentId: 'TP053456', faculty: 'Faculty of Computing', phone: '016-5432198', bio: '', joinDate: Date.now()-648000000 },
+  ];
+  DB.saveUsers(demoUsers);
+}
+
+// ========== NAVIGATION ==========
+let currentPage = 'home';
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (!el) return;
+  el.classList.add('active');
+  currentPage = page;
+  window.scrollTo(0, 0);
+  if (page === 'home') renderProducts();
+  if (page === 'profile') { if (!requireLogin()) return; renderProfile(); }
+  if (page === 'cart') renderCart();
+  if (page === 'wishlist') renderWishlist();
+  if (page === 'checkout') renderCheckout();
+  if (page === 'add-product') { if (!requireLogin()) return; }
+  if (page === 'payment') renderPaymentGateway();
+  updateNav();
+}
+function requireLogin() {
+  if (!DB.currentUser()) { showToast('Please login first', 'error'); navigate('login'); return false; }
+  return true;
+}
+function updateNav() {
+  const user = DB.currentUser();
+  document.getElementById('navAuthButtons').style.display = user ? 'none' : 'flex';
+  document.getElementById('navUserArea').style.display = user ? 'flex' : 'none';
+  if (user) document.getElementById('navAvatar').textContent = user.firstName[0].toUpperCase();
+  const cartCount = DB.cart().length;
+  const wishCount = DB.wishlist().length;
+  const cb = document.getElementById('cartBadge');
+  const wb = document.getElementById('wishlistBadge');
+  cb.style.display = cartCount > 0 ? 'flex' : 'none';
+  cb.textContent = cartCount;
+  wb.style.display = wishCount > 0 ? 'flex' : 'none';
+  wb.textContent = wishCount;
+}
+
+// ========== TOAST ==========
+function showToast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = (type==='success'?'✓ ':type==='error'?'✕ ':'') + msg;
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => t.remove(), 3500);
+}
+
+// ========== AUTH ==========
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+  const users = DB.users();
+  const user = users.find(u => u.email === email && u.password === pass);
+  if (!user) { document.getElementById('loginError').style.display='block'; document.getElementById('loginError').textContent='Invalid email or password.'; return; }
+  DB.setCurrentUser(user);
+  updateNav();
+  showToast('Welcome back, ' + user.firstName + '!');
+  navigate('home');
+}
+function doSignup() {
+  const first = document.getElementById('signupFirst').value.trim();
+  const last = document.getElementById('signupLast').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const sId = document.getElementById('signupStudentId').value.trim();
+  const faculty = document.getElementById('signupFaculty').value.trim();
+  const pass = document.getElementById('signupPassword').value;
+  const errEl = document.getElementById('signupError');
+  errEl.style.display = 'none';
+  if (!first||!last||!email||!sId||!pass) { errEl.style.display='block'; errEl.textContent='Please fill in all required fields.'; return; }
+  if (pass.length < 6) { errEl.style.display='block'; errEl.textContent='Password must be at least 6 characters.'; return; }
+  const users = DB.users();
+  if (users.find(u => u.email === email)) { errEl.style.display='block'; errEl.textContent='An account with this email already exists.'; return; }
+  const newUser = { id: 'u'+Date.now(), firstName: first, lastName: last, email, studentId: sId, faculty, password: pass, phone: '', bio: '', joinDate: Date.now() };
+  users.push(newUser);
+  DB.saveUsers(users);
+  DB.setCurrentUser(newUser);
+  updateNav();
+  showToast('Account created! Welcome, ' + first + '! 🌱');
+  navigate('home');
+}
+function doLogout() {
+  DB.logout();
+  updateNav();
+  showToast('Logged out successfully');
+  navigate('home');
+}
+
+// ========== FUNGSI GAMBAR ==========
+let uploadedImageBase64 = '';
+function previewImage(event) {
+  const file = event.target.files[0];
+  if (!file) {
+    uploadedImageBase64 = '';
+    document.getElementById('imagePreviewContainer').style.display = 'none';
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024) { // Had saiz 2MB
+    showToast('Saiz gambar terlalu besar! Maksimum 2MB.', 'error');
+    event.target.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    uploadedImageBase64 = e.target.result;
+    document.getElementById('imagePreview').src = uploadedImageBase64;
+    document.getElementById('imagePreviewContainer').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========== PRODUCTS ==========
+const catEmojis = { Books:'📚', Electronics:'💻', Furniture:'🪑', Clothing:'👕', Stationery:'✏️', Sports:'⚽', Kitchen:'🍳', Other:'📦' };
+function renderProducts() {
+  const products = getFilteredProducts();
+  const grid = document.getElementById('productsGrid');
+  const empty = document.getElementById('productsEmpty');
+  const count = document.getElementById('productCount');
+  count.textContent = '(' + products.length + ' items)';
+  if (products.length === 0) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  const wishlist = DB.wishlist();
+  grid.innerHTML = products.map(p => `
+    <div class="product-card" onclick="viewProduct('${p.id}')">
+      <div class="product-img">
+        ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : (p.emoji || catEmojis[p.category] || '📦')}
+        <span class="product-condition">${p.condition}</span>
+        <button class="wishlist-btn" onclick="event.stopPropagation();toggleWishlist('${p.id}')">${wishlist.includes(p.id)?'❤️':'♡'}</button>
+      </div>
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-price">RM ${p.price.toFixed(2)} ${p.originalPrice?`<span style="font-size:12px;color:var(--text-hint);font-weight:400;text-decoration:line-through">RM ${p.originalPrice.toFixed(2)}</span>`:''}</div>
+        <div class="product-meta"><span class="tag">${p.category}</span><span>📍 ${p.location||'Campus'}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+function getFilteredProducts() {
+  let prods = DB.products().filter(p => !p.sold);
+  const text = (document.getElementById('filterText')||{}).value||'';
+  const cat = (document.getElementById('filterCat')||{}).value||'';
+  const sort = (document.getElementById('filterSort')||{}).value||'newest';
+  const cond = (document.getElementById('filterCond')||{}).value||'';
+  const gs = (document.getElementById('globalSearch')||{}).value||'';
+  const query = (text||gs).toLowerCase();
+  if (query) prods = prods.filter(p => p.title.toLowerCase().includes(query) || p.description.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+  if (cat) prods = prods.filter(p => p.category === cat);
+  if (cond) prods = prods.filter(p => p.condition === cond);
+  if (sort === 'newest') prods.sort((a,b) => b.date - a.date);
+  else if (sort === 'price_asc') prods.sort((a,b) => a.price - b.price);
+  else if (sort === 'price_desc') prods.sort((a,b) => b.price - a.price);
+  return prods;
+}
+function globalSearchProducts() { if(currentPage==='home') renderProducts(); }
+function filterByCategory(cat) {
+  navigate('home');
+  setTimeout(() => { document.getElementById('filterCat').value = cat; renderProducts(); }, 50);
+}
+function viewProduct(id) {
+  const p = DB.products().find(x => x.id === id);
+  if (!p) return;
+  const wishlist = DB.wishlist();
+  const cart = DB.cart();
+  const inCart = cart.some(c => c.productId === id);
+  const inWish = wishlist.includes(id);
+  const savings = p.originalPrice ? (p.originalPrice - p.price) : 0;
+  document.getElementById('productDetailContent').innerHTML = `
+    <button class="btn-outline btn-sm" style="margin-bottom:1rem" onclick="navigate('home')">← Back</button>
+    <div class="detail-grid">
+      <div>
+        <div class="detail-img">
+          ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : (p.emoji || catEmojis[p.category] || '📦')}
+        </div>
+        ${savings>0?`<div class="alert alert-success" style="margin-top:1rem">💸 You save RM ${savings.toFixed(2)} compared to buying new!</div>`:''}
+      </div>
+      <div>
+        <span class="tag">${p.category}</span>
+        <h2 style="font-size:1.5rem;font-weight:700;margin:10px 0">${p.title}</h2>
+        <div class="detail-price">RM ${p.price.toFixed(2)} ${p.originalPrice?`<span style="font-size:1rem;font-weight:400;color:var(--text-hint);text-decoration:line-through">RM ${p.originalPrice.toFixed(2)}</span>`:''}</div>
+        <div class="detail-meta">
+          <span class="meta-chip"><strong>Condition:</strong> ${p.condition}</span>
+          <span class="meta-chip">📍 ${p.location||'Campus'}</span>
+          <span class="meta-chip">📅 ${new Date(p.date).toLocaleDateString('en-MY')}</span>
+        </div>
+        <p style="color:var(--text-muted);font-size:14px;line-height:1.7;margin-bottom:1rem">${p.description}</p>
+        <div class="detail-actions">
+          <button class="btn-primary" onclick="${inCart?'navigate(\'cart\')':'addToCart(\''+id+'\')'}" ${p.sold?'disabled':''}>
+            ${p.sold?'❌ Sold Out': inCart?'🛒 View Cart':'🛒 Add to Cart'}
+          </button>
+          <button class="btn-outline" onclick="toggleWishlist('${id}')">
+            ${inWish?'❤️ Wishlisted':'♡ Add to Wishlist'}
+          </button>
+        </div>
+        <div class="seller-card">
+          <div class="seller-avatar">${p.sellerName[0]}</div>
+          <div>
+            <div style="font-weight:600;font-size:14px">${p.sellerName}</div>
+            <div style="font-size:12px;color:var(--text-hint)">Seller · ${new Date(p.date).toLocaleDateString('en-MY')}</div>
+          </div>
+          <button class="btn-outline btn-sm" style="margin-left:auto" onclick="showToast('Contact feature: reach seller via campus email', 'info')">Contact Seller</button>
+        </div>
+        ${DB.currentUser()&&DB.currentUser().id===p.sellerId?`
+          <div style="margin-top:1rem">
+            <button class="btn-danger btn-sm" onclick="deleteProduct('${id}')">🗑 Remove Listing</button>
+          </div>
+        `:''}
+      </div>
+    </div>
+  `;
+  navigate('product-details');
+}
+function submitProduct() {
+  if (!requireLogin()) return;
+  const title = document.getElementById('addTitle').value.trim();
+  const cat = document.getElementById('addCategory').value;
+  const cond = document.getElementById('addCondition').value;
+  const price = parseFloat(document.getElementById('addPrice').value);
+  const origPrice = parseFloat(document.getElementById('addOriginalPrice').value)||0;
+  const desc = document.getElementById('addDescription').value.trim();
+  const loc = document.getElementById('addLocation').value.trim();
+  
+  if (!title||!cat||!cond||!price||!desc) { showToast('Please fill in all required fields', 'error'); return; }
+  
+  const user = DB.currentUser();
+  const prods = DB.products();
+  
+  // Set default emoji jika gambar tak dimasukkan
+  const emoji = catEmojis[cat] || '📦';
+  const image = uploadedImageBase64;
+  
+  const newProd = { id:'p'+Date.now(), title, category:cat, condition:cond, price, originalPrice:origPrice, emoji:emoji, image:image, description:desc, location:loc, sellerId:user.id, sellerName:user.firstName+' '+user.lastName, date:Date.now(), wishlistedBy:[], sold:false };
+  
+  prods.unshift(newProd);
+  DB.saveProducts(prods);
+  
+  ['addTitle','addCategory','addCondition','addPrice','addOriginalPrice','addDescription','addLocation','addImage'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  
+  uploadedImageBase64 = '';
+  document.getElementById('imagePreviewContainer').style.display = 'none';
+  
+  showToast('Item listed successfully! 🌱');
+  navigate('home');
+}
+function deleteProduct(id) {
+  if (!confirm('Remove this listing?')) return;
+  const prods = DB.products().filter(p => p.id !== id);
+  DB.saveProducts(prods);
+  const cart = DB.cart().filter(c => c.productId !== id);
+  DB.saveCart(cart);
+  showToast('Listing removed');
+  navigate('home');
+}
+
+// ========== CART ==========
+function addToCart(productId) {
+  if (!requireLogin()) return;
+  const cart = DB.cart();
+  if (cart.some(c => c.productId === productId)) { showToast('Already in cart!', 'info'); return; }
+  cart.push({ productId, addedAt: Date.now() });
+  DB.saveCart(cart);
+  updateNav();
+  showToast('Added to cart! 🛒');
+  viewProduct(productId);
+}
+function removeFromCart(productId) {
+  DB.saveCart(DB.cart().filter(c => c.productId !== productId));
+  updateNav(); renderCart();
+  showToast('Removed from cart');
+}
+function renderCart() {
+  const cart = DB.cart();
+  const prods = DB.products();
+  const empty = document.getElementById('cartEmpty');
+  const layout = document.getElementById('cartLayout');
+  if (cart.length === 0) { empty.style.display='block'; layout.style.display='none'; return; }
+  empty.style.display = 'none'; layout.style.display = 'grid';
+  let total = 0;
+  const items = cart.map(c => {
+    const p = prods.find(x => x.id === c.productId);
+    if (!p) return '';
+    total += p.price;
+    return `<div class="cart-item">
+      <div class="cart-item-img">
+        ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : (p.emoji||catEmojis[p.category]||'📦')}
+      </div>
+      <div class="cart-item-info">
+        <div class="cart-item-title">${p.title}</div>
+        <div class="cart-item-seller">Sold by ${p.sellerName} · ${p.condition}</div>
+        <div class="cart-item-price">RM ${p.price.toFixed(2)}</div>
+      </div>
+      <button class="cart-remove" onclick="removeFromCart('${p.id}')" title="Remove">✕</button>
+    </div>`;
+  }).join('');
+  document.getElementById('cartItems').innerHTML = items;
+  const fee = 0;
+  document.getElementById('cartSummaryRows').innerHTML = `
+    <div class="summary-row"><span>Subtotal (${cart.length} items)</span><span>RM ${total.toFixed(2)}</span></div>
+    <div class="summary-row"><span>Platform fee</span><span style="color:var(--success)">Free</span></div>
+    <div class="summary-row total"><span>Total</span><span>RM ${total.toFixed(2)}</span></div>
+  `;
+}
+
+// ========== WISHLIST ==========
+function toggleWishlist(productId) {
+  if (!requireLogin()) return;
+  let wl = DB.wishlist();
+  if (wl.includes(productId)) {
+    DB.saveWishlist(wl.filter(x => x !== productId));
+    showToast('Removed from wishlist');
+  } else {
+    wl.push(productId);
+    DB.saveWishlist(wl);
+    showToast('Added to wishlist ❤️');
+  }
+  updateNav();
+  if (currentPage === 'wishlist') renderWishlist();
+  if (currentPage === 'home') renderProducts();
+}
+function renderWishlist() {
+  const wl = DB.wishlist();
+  const prods = DB.products().filter(p => wl.includes(p.id));
+  const grid = document.getElementById('wishlistGrid');
+  const empty = document.getElementById('wishlistEmpty');
+  if (prods.length === 0) { grid.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display = 'none';
+  grid.innerHTML = prods.map(p => `
+    <div class="product-card" onclick="viewProduct('${p.id}')">
+      <div class="product-img">
+        ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : (p.emoji||catEmojis[p.category]||'📦')}
+        <span class="product-condition">${p.condition}</span>
+        <button class="wishlist-btn" onclick="event.stopPropagation();toggleWishlist('${p.id}')">❤️</button>
+      </div>
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-price">RM ${p.price.toFixed(2)}</div>
+        <div class="product-meta"><span class="tag">${p.category}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ========== PROFILE ==========
+function renderProfile() {
+  const user = DB.currentUser();
+  if (!user) return;
+  const myProducts = DB.products().filter(p => p.sellerId === user.id);
+  const myOrders = DB.orders().filter(o => o.buyerId === user.id);
+  document.getElementById('profileHeader').innerHTML = `
+    <div class="profile-avatar">${user.firstName[0].toUpperCase()}</div>
+    <div class="profile-info">
+      <h2>${user.firstName} ${user.lastName}</h2>
+      <p>🎓 ${user.faculty||'University Student'}</p>
+      <p style="margin-top:4px">🪪 ${user.studentId} · 📧 ${user.email}</p>
+      ${user.bio?`<p style="margin-top:8px;color:var(--text-muted);font-size:14px">${user.bio}</p>`:''}
+      <p style="font-size:12px;color:var(--text-hint);margin-top:8px">Member since ${new Date(user.joinDate).toLocaleDateString('en-MY',{year:'numeric',month:'long'})}</p>
+    </div>
+    <button class="btn-danger btn-sm" style="margin-left:auto;align-self:flex-start" onclick="doLogout()">Logout</button>
+  `;
+  document.getElementById('profileStats').innerHTML = `
+    <div class="stat-card"><div class="stat-num">${myProducts.length}</div><div class="stat-label">Listings</div></div>
+    <div class="stat-card"><div class="stat-num">${myOrders.length}</div><div class="stat-label">Orders</div></div>
+    <div class="stat-card"><div class="stat-num">${DB.wishlist().length}</div><div class="stat-label">Wishlisted</div></div>
+  `;
+  renderMyListings();
+  document.getElementById('editFirst').value = user.firstName;
+  document.getElementById('editLast').value = user.lastName;
+  document.getElementById('editFaculty').value = user.faculty||'';
+  document.getElementById('editPhone').value = user.phone||'';
+  document.getElementById('editBio').value = user.bio||'';
+}
+function renderMyListings() {
+  const user = DB.currentUser();
+  const prods = DB.products().filter(p => p.sellerId === user.id);
+  const el = document.getElementById('myListings');
+  if (prods.length === 0) { el.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p style="margin-bottom:1rem">No listings yet.</p><button class="btn-primary" onclick="navigate(\'add-product\')">List an Item</button></div>'; return; }
+  el.innerHTML = `<div class="products-grid">${prods.map(p=>`
+    <div class="product-card" onclick="viewProduct('${p.id}')">
+      <div class="product-img">
+        ${p.image ? `<img src="${p.image}" style="width:100%;height:100%;object-fit:cover;">` : (p.emoji||catEmojis[p.category]||'📦')}
+        <span class="product-condition">${p.condition}</span>
+      </div>
+      <div class="product-info">
+        <div class="product-title">${p.title}</div>
+        <div class="product-price">RM ${p.price.toFixed(2)}</div>
+        <div class="product-meta"><span class="tag">${p.category}</span>${p.sold?'<span style="color:var(--danger);font-size:12px">● Sold</span>':''}</div>
+      </div>
+    </div>
+  `).join('')}</div>`;
+}
+function saveProfile() {
+  const user = DB.currentUser();
+  user.firstName = document.getElementById('editFirst').value.trim()||user.firstName;
+  user.lastName = document.getElementById('editLast').value.trim()||user.lastName;
+  user.faculty = document.getElementById('editFaculty').value.trim();
+  user.phone = document.getElementById('editPhone').value.trim();
+  user.bio = document.getElementById('editBio').value.trim();
+  const users = DB.users().map(u => u.id===user.id?user:u);
+  DB.saveUsers(users);
+  DB.setCurrentUser(user);
+  showToast('Profile updated!');
+  renderProfile();
+  switchTab(document.querySelector('.tab.active'), 'myListings');
+}
+function switchTab(el, tabId) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  ['myListings','editProfile','orderHistory'].forEach(id => document.getElementById(id).style.display='none');
+  document.getElementById(tabId).style.display='block';
+  if (tabId==='orderHistory') renderOrderHistory();
+}
+function renderOrderHistory() {
+  const orders = DB.orders().filter(o => o.buyerId === DB.currentUser()?.id);
+  const el = document.getElementById('orderList');
+  if (orders.length===0) { el.innerHTML='<div class="empty-state"><div class="icon">📋</div><p>No orders yet.</p></div>'; return; }
+  el.innerHTML = orders.map(o=>`
+    <div class="card" style="margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <span style="font-weight:700">Order #${o.id.slice(-6).toUpperCase()}</span>
+        <span style="font-size:12px;color:var(--text-hint)">${new Date(o.date).toLocaleDateString('en-MY')}</span>
+      </div>
+      ${o.items.map(i=>`<div style="display:flex;justify-content:space-between;font-size:14px;padding:6px 0;border-bottom:1px solid var(--border)"><span>${i.title}</span><span>RM ${i.price.toFixed(2)}</span></div>`).join('')}
+      <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:8px"><span>Total</span><span style="color:var(--primary)">RM ${o.total.toFixed(2)}</span></div>
+      <div style="margin-top:8px"><span class="tag">✅ ${o.status}</span> · <span style="font-size:12px;color:var(--text-muted)">${o.paymentMethod}</span></div>
+    </div>
+  `).join('');
+}
+
+// ========== CHECKOUT MAPS UTHM ==========
+function setMapLocation(name, lat, lng) {
+  // Masukkan nama tempat ke dalam input address
+  document.getElementById('ckAddress').value = name;
+  // Update link peta dengan zoom (z=17) untuk view yang dekat
+  document.getElementById('uthmMapFrame').src = `https://maps.google.com/maps?q=${lat},${lng}&t=&z=17&ie=UTF8&iwloc=&output=embed`;
+}
+
+// ========== CHECKOUT ==========
+function renderCheckout() {
+  if (!requireLogin()) return;
+  const cart = DB.cart();
+  const prods = DB.products();
+  let total = 0;
+  const user = DB.currentUser();
+  document.getElementById('ckName').value = (user?.firstName||'')+' '+(user?.lastName||'');
+  document.getElementById('ckPhone').value = user?.phone||'';
+  const items = cart.map(c => {
+    const p = prods.find(x=>x.id===c.productId);
+    if(!p) return '';
+    total+=p.price;
+    const media = p.image ? `<img src="${p.image}" style="width:20px;height:20px;object-fit:cover;vertical-align:middle;border-radius:4px;margin-right:6px;">` : (p.emoji||'📦');
+    return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px"><span>${media} ${p.title}</span><span>RM ${p.price.toFixed(2)}</span></div>`;
+  }).join('');
+  document.getElementById('checkoutItems').innerHTML = items;
+  document.getElementById('checkoutSummaryRows').innerHTML = `
+    <div class="summary-row" style="margin-top:8px"><span>Subtotal</span><span>RM ${total.toFixed(2)}</span></div>
+    <div class="summary-row"><span>Platform fee</span><span style="color:var(--success)">Free</span></div>
+    <div class="summary-row total"><span>Total</span><span>RM ${total.toFixed(2)}</span></div>
+  `;
+}
+function selectPayment(el, method) {
+  document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('selectedPaymentMethod').value = method;
+}
+function placeOrder() {
+  if (!requireLogin()) return;
+  const name = document.getElementById('ckName').value.trim();
+  const addr = document.getElementById('ckAddress').value.trim();
+  if (!name||!addr) { showToast('Please fill in delivery details', 'error'); return; }
+  const cart = DB.cart();
+  const prods = DB.products();
+  const user = DB.currentUser();
+  let total = 0;
+  const items = cart.map(c => {
+    const p = prods.find(x=>x.id===c.productId);
+    if(!p) return null;
+    total+=p.price;
+    return { productId:p.id, title:p.title, price:p.price, emoji:p.emoji||catEmojis[p.category]||'📦', image: p.image };
+  }).filter(Boolean);
+  const order = {
+    id: 'ord'+Date.now(),
+    buyerId: user.id,
+    items, total,
+    name, address: addr,
+    meetDate: document.getElementById('ckDate').value,
+    meetTime: document.getElementById('ckTime').value,
+    notes: document.getElementById('ckNotes').value,
+    paymentMethod: document.getElementById('selectedPaymentMethod').value,
+    status: 'Confirmed',
+    date: Date.now()
+  };
+  const orders = DB.orders();
+  orders.push(order);
+  DB.saveOrders(orders);
+  DB.saveCart([]);
+  updateNav();
+  // mark products as sold
+  const updatedProds = prods.map(p => cart.some(c=>c.productId===p.id)?{...p,sold:true}:p);
+  DB.saveProducts(updatedProds);
+  // go to payment
+  DB.set('pendingOrder', order);
+  navigate('payment');
+}
+
+// ========== PAYMENT GATEWAY ==========
+function renderPaymentGateway() {
+  const order = DB.get('pendingOrder');
+  if (!order) { document.getElementById('paymentGatewayContent').innerHTML = '<div class="payment-success"><div class="icon">✅</div><h2>No pending payment</h2><button class="btn-primary" onclick="navigate(\'home\')" style="margin-top:1rem">Browse Market</button></div>'; return; }
+  const methodLabels = { online:'Online Banking', ewallet:'e-Wallet', cash:'Cash (Meet-up)', transfer:'Bank Transfer' };
+  document.getElementById('paymentGatewayContent').innerHTML = `
+    <div class="card" style="text-align:center;padding:2rem">
+      <div style="font-size:3.5rem;margin-bottom:1rem">🔒</div>
+      <h2 style="font-weight:700;margin-bottom:0.5rem">Secure Payment</h2>
+      <p style="color:var(--text-muted);font-size:14px;margin-bottom:1.5rem">Order #${order.id.slice(-6).toUpperCase()} · Method: ${methodLabels[order.paymentMethod]}</p>
+      <div class="card" style="background:var(--bg);margin-bottom:1.5rem;text-align:left">
+        ${order.items.map(i=>{
+          const media = i.image ? `<img src="${i.image}" style="width:20px;height:20px;object-fit:cover;vertical-align:middle;border-radius:4px;margin-right:6px;">` : (i.emoji||'📦');
+          return `<div style="display:flex;justify-content:space-between;padding:8px 0;font-size:14px;border-bottom:1px solid var(--border)"><span>${media} ${i.title}</span><span>RM ${i.price.toFixed(2)}</span></div>`;
+        }).join('')}
+        <div style="display:flex;justify-content:space-between;font-weight:700;margin-top:8px;font-size:16px"><span>Total</span><span style="color:var(--primary)">RM ${order.total.toFixed(2)}</span></div>
+      </div>
+      ${order.paymentMethod==='cash'?`
+        <div class="alert alert-info" style="text-align:left;margin-bottom:1.5rem">
+          💵 Cash Payment Instructions: Meet the seller at the agreed location. Pay exact amount in cash. The seller will confirm your order upon receiving payment.
+        </div>
+        <button class="btn-primary" style="width:100%;padding:13px" onclick="confirmPayment()">Confirm Cash Order ✓</button>
+      `:order.paymentMethod==='ewallet'?`
+        <div class="alert alert-info" style="text-align:left;margin-bottom:1.5rem">📱 Transfer via Touch 'n Go / Boost / GrabPay to: <strong>UniMarket@university.edu.my</strong><br>Reference: ${order.id.slice(-6).toUpperCase()}</div>
+        <button class="btn-primary" style="width:100%;padding:13px" onclick="confirmPayment()">I've Made the Transfer ✓</button>
+      `:`
+        <div class="alert alert-info" style="text-align:left;margin-bottom:1rem">🏦 Bank: Maybank / CIMB · Account: 1234-5678-9012 · Name: UniMarket Sdn Bhd · Ref: ${order.id.slice(-6).toUpperCase()}</div>
+        <button class="btn-primary" style="width:100%;padding:13px;font-size:15px" onclick="confirmPayment()">Confirm Payment ✓</button>
+      `}
+      <button class="btn-outline" style="width:100%;padding:11px;margin-top:10px" onclick="navigate('home')">Cancel & Return</button>
+    </div>
+  `;
+}
+function confirmPayment() {
+  const order = DB.get('pendingOrder');
+  if (!order) return;
+  DB.set('pendingOrder', null);
+  document.getElementById('paymentGatewayContent').innerHTML = `
+    <div class="payment-success">
+      <div class="icon">✅</div>
+      <h2>Payment Confirmed!</h2>
+      <p>Order #${order.id.slice(-6).toUpperCase()} has been placed.</p>
+      <p style="margin-top:8px">Meet-up: ${order.meetDate||'TBC'} · ${order.meetTime}</p>
+      <p style="font-size:13px;color:var(--text-hint);margin-top:8px">📍 ${order.address}</p>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:1.5rem;flex-wrap:wrap">
+        <button class="btn-primary" onclick="navigate('profile')">View Orders</button>
+        <button class="btn-outline" onclick="navigate('home')">Continue Shopping</button>
+      </div>
+    </div>
+  `;
+  showToast('🎉 Order placed successfully!');
+}
+
+// ========== CONTACT ==========
+function submitContact() {
+  const name = document.getElementById('ctName').value.trim();
+  const email = document.getElementById('ctEmail').value.trim();
+  const msg = document.getElementById('ctMessage').value.trim();
+  if (!name||!email||!msg) { showToast('Please fill in all fields', 'error'); return; }
+  const messages = DB.get('contactMessages')||[];
+  messages.push({ name, email, subject: document.getElementById('ctSubject').value, message: msg, date: Date.now() });
+  DB.set('contactMessages', messages);
+  document.getElementById('contactSuccess').style.display='block';
+  ['ctName','ctEmail','ctMessage'].forEach(id => document.getElementById(id).value='');
+  setTimeout(()=>document.getElementById('contactSuccess').style.display='none', 5000);
+}
+
+// ========== CUSTOMER SERVICE CHAT ==========
+const chatBotReplies = {
+  'list': 'To list an item, click "+ List an Item" on the homepage or go to "Add Product" in the menu. Fill in the title, category, condition, price, and description. Your item will be live immediately!',
+  'payment': 'UniMarket supports Online Banking, e-Wallet (Touch \'n Go, Boost), Bank Transfer, and Cash Meet-up. All transactions are between buyers and sellers directly. Meet in safe campus areas for cash payments.',
+  'report': 'To report a suspicious seller, click "Contact Seller" on the product page and use the Contact Us form to flag the issue. We take all reports seriously and will investigate within 24 hours.',
+  'track': 'After placing an order, go to Profile → Order History to view your order status. You can also contact the seller directly via campus email.',
+  'delete': 'To remove a listing, go to the product details page. If you\'re the seller, you\'ll see a "Remove Listing" button. You can also manage listings in Profile → My Listings.',
+  'refund': 'UniMarket facilitates peer-to-peer trades. For refunds, please contact the seller first. If unresolved, use our Contact Us form and we\'ll mediate. Items must be returned in original condition.',
+  'free': 'Yes! UniMarket is completely free for all enrolled students. No listing fees, no commission, no hidden charges.',
+  'safe': 'Always meet in public campus areas (library, cafeteria, student centre). Never share personal financial info. Use our platform\'s messaging to communicate. Report any suspicious behaviour.',
+  'default': 'Thank you for your question! Our support team will get back to you within 24 hours. You can also try our Contact Us page for faster assistance.'
+};
+function askSupport(question) { document.getElementById('chatInput').value = question; sendChat(); }
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  const chatArea = document.getElementById('chatMessages');
+  chatArea.innerHTML += `<div class="chat-bubble user">${msg}</div>`;
+  input.value = '';
+  const key = Object.keys(chatBotReplies).find(k => msg.toLowerCase().includes(k));
+  setTimeout(()=>{
+    chatArea.innerHTML += `<div class="chat-bubble bot">${chatBotReplies[key]||chatBotReplies['default']}</div>`;
+    chatArea.scrollTop = chatArea.scrollHeight;
+  }, 700);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
+
+// ========== INIT ==========
+seedData();
+updateNav();
+renderProducts();
+</script>
+</body>
+</html>
